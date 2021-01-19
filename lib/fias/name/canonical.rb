@@ -96,16 +96,22 @@ module Fias
           end
 
           def short_for(long)
-            Fias.config.shorts[Unicode.downcase(long)] || long
+            if long.is_a?(Array)
+              short_for(long[0])
+            else
+              Fias.config.shorts[Unicode.downcase(long)] || long
+            end
           end
 
           def aliases_for(long)
-
-            Fias.config.aliases[Unicode.downcase(long)]
+            if long.is_a?(Array)
+              aliases_for(long[0])
+            else
+              Fias.config.aliases[Unicode.downcase(long)]
+            end
           end
 
           def search_exception(name)
-
             Fias.config.exceptions[Unicode.downcase(name)]
           end
 

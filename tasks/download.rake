@@ -9,7 +9,7 @@ namespace :fias do
       puts url
     else
       puts 'An error occured during SOAP call'
-      next 999
+      return 999
     end
   end
 end
