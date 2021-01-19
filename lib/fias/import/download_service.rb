@@ -1,36 +1,18 @@
 module Fias
   module Import
     module DownloadService
-      def url
-        response = HTTParty.post(
-          'https://fias.nalog.ru/WebServices/Public/DownloadService.asmx',
-          OPTIONS
+      def data
+        response = HTTParty.get(
+          'https://fias.nalog.ru/WebServices/Public/GetAllDownloadFileInfo',
         )
-
-        matches =
-          response.body.match(/<FiasCompleteDbfUrl>(.*)<\/FiasCompleteDbfUrl>/)
-
-        matches[1] if matches
+        data = JSON.parse(response.body)
+        data = data.reject {|d| d["FiasCompleteDbfUrl"].blank? }.sort_by { |d| d["VersionId"] }.reverse
+        data[0]
       end
-
-      OPTIONS = {
-        body: %(<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-<soap:Body>
-<GetLastDownloadFileInfo
-  xmlns="http://fias.nalog.ru/WebServices/Public/DownloadService.asmx/" />
-</soap:Body>
-</soap:Envelope>
-),
-        headers: {
-          'SOAPAction' => 'http://fias.nalog.ru/WebServices/Public/DownloadService.asmx/GetLastDownloadFileInfo',
-          'Content-Type' => 'text/xml; encoding=utf-8'
-        }
-      }
-
+      def url
+        data["FiasCompleteDbfUrl"]
+      end
+      module_function :data
       module_function :url
     end
   end

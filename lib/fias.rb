@@ -31,7 +31,7 @@ module Fias
   FEDERAL_CITIES = ['Москва', 'Санкт-Петербург', 'Севастополь', 'Байконур']
 end
 
-gem 'dbf', '=3.1.0'
+#gem 'dbf', '=3.1.0'
 
 require 'unicode'
 require 'active_support/core_ext/object/blank'
