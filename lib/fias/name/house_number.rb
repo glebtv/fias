@@ -27,7 +27,10 @@ module Fias
         end
 
         def try_split_by_colon(name)
-          name.split(/\s*,\s*/, 2) if name =~ COLON
+          if name =~ COLON
+            d = name.split(/\s*,\s*/)
+            [d[0..-2].join(", "), d[-1]]
+          end
         end
 
         def try_housing(name)
