@@ -2,19 +2,27 @@ module Fias
   module Name
     module HouseNumber
       class << self
-        def extract(name)
-          return [name, nil] unless contains_number?(name)
+        def extract(orig_name)
+          return [orig_name, nil] unless contains_number?(orig_name)
 
           name, number =
-            try_split_by_colon(name)   ||
-            try_housing(name)          ||
-            try_house_word(name)       ||
-            try_ends_with_number(name)
+            try_housing(orig_name)          ||
+            try_house_word(orig_name)       ||
+            try_split_by_colon(orig_name)   ||
+            try_ends_with_number(orig_name)
 
-          [name.strip, number.strip]
+          if number.blank?
+            return [remove_trailing_comma(orig_name.try(:strip)), nil]
+          end
+
+          [remove_trailing_comma(name.try(:strip)), number.try(:strip)]
         end
 
         private
+
+        def remove_trailing_comma(str)
+          str.nil? ? nil : str.chomp(",")
+        end
 
         def contains_number?(name)
           !(name =~ JUST_A_NUMBER) && !(name =~ LINE_OR_MICRODISTRICT) &&
@@ -29,7 +37,12 @@ module Fias
         def try_split_by_colon(name)
           if name =~ COLON
             d = name.split(/\s*,\s*/)
-            [d[0..-2].join(", "), d[-1]]
+
+            if contains_number?(d[-1])
+              [d[0..-2].join(", "), d[-1]]
+            else
+              nil
+            end
           end
         end
 
