@@ -6,9 +6,10 @@ module Fias
           return [orig_name, nil] unless contains_number?(orig_name)
 
           name, number =
+            try_split_by_house(orig_name)   ||
             try_housing(orig_name)          ||
-            try_house_word(orig_name)       ||
             try_split_by_colon(orig_name)   ||
+            try_house_word(orig_name)       ||
             try_ends_with_number(orig_name)
 
           if number.blank?
@@ -33,6 +34,16 @@ module Fias
               name =~ NUMBER_WITH_HOUSING
             )
         end
+
+        def try_split_by_house(str)
+          parts = str.split(", д.")
+          if parts.length == 2
+            return parts
+          else
+            return nil
+          end
+        end
+
 
         def try_split_by_colon(name)
           if name =~ COLON
@@ -81,7 +92,7 @@ module Fias
         /(\s|\,|\.|^)(#{or_words(HOUSE_WORDS)})(\s|\,|\.|$)/ui
       HOUSING_WORDS         = %w(корпус корп к)
       NUMBER_WITH_HOUSING   =
-        /#{NUMBER}[\s\,\.]+(#{or_words(HOUSING_WORDS)})[\s\,\.]+#{NUMBER}/ui
+        /\s#{NUMBER}[\s\,\.]+(#{or_words(HOUSING_WORDS)})[\s\,\.]+#{NUMBER}/ui
     end
   end
 end
